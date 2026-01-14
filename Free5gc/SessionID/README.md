@@ -1,10 +1,15 @@
 # CVE Information
 
 Vendor: free5gc (https://free5gc.org)
+
 Affected Product: free5gc AMF (Access and Mobility Management Function)
+
 Affected Version: <= v4.1.0
+
 Vulnerability Type: Buffer Overflow
+
 Impact: Denial of Service (DoS)
+
 Attack Vector: Remote (requires gNB connection)
 ## Proof of Concept (PoC)
 Since the vulnerability is triggered in the deeper layers of the GMM procedure, where the UE's Authentication Response needs to calculate the RES* field using the random number sent by the core network in the current registration (no key is required, and any valid IMSI can complete this), 
