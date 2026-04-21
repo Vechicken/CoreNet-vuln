@@ -14,14 +14,45 @@ Attack Vector: Remote (requires gNB connection)
 ## Proof of Concept (PoC)
 Since the vulnerability is triggered in the deeper layers of the GMM procedure, where the UE's Authentication Response needs to calculate the RES* field using the random number sent by the core network in the current registration (no key is required, and any valid IMSI can complete this), it is not possible to provide a hardcoded PoC. Here, the trigger process is illustrated through root cause analysis, a sample packet capture, and a screenshot of the trigger.
 
-Vulnerable code (ngap_handler.go:245-247):
+Vulnerable code (ngap_handler.go:108-122):
 ```go
-  if ctx.NrdcIndicator {
-      ieExtensions := pathSwitchRequestTransfer.IEExtensions
-      for _, ie := range ieExtensions.List {  // PANIC: ieExtensions can be nil
+  if qosInfoList := resourceModifyResponseTransfer.QosFlowAddOrModifyResponseList; qosInfoList != nil {
+      for _, item := range qosInfoList.List {
+          qfi := uint8(item.QosFlowIdentifier.Value)
+          ctx.AdditonalQosFlows[qfi].State = QoSFlowSet  // PANIC: nil if qfi not in map
+      }
+  }
+  if qosFailedInfoList := resourceModifyResponseTransfer.QosFlowFailedToAddOrModifyList; qosFailedInfoList != nil {
+      for _, item := range qosFailedInfoList.List {
+          qfi := uint8(item.QosFlowIdentifier.Value)
+          ...
+          ctx.AdditonalQosFlows[qfi].State = QoSFlowUnset  // PANIC: nil if qfi not in map
+      }
+  }
+
 ```
+
 Vulnerable packet:
 	in appendix
+
+Steps to reproduce the behavior:
+1. Use default free5gc configuration (no config changes required).
+2. Start all NFs (./run.sh).
+3. Connect a gNB simulator, complete NG Setup, register a UE, and establish a PDU Session (PDU Session ID=1). Record the AMF-UE-NGAP-ID and RAN-UE-NGAP-ID assigned during registration.
+4. From the gNB simulator, send an unsolicited NGAP PDUSessionResourceModifyResponse with the following structure:
+
+PDUSessionResourceModifyResponse {
+AMF-UE-NGAP-ID:
+RAN-UE-NGAP-ID:
+PDUSessionResourceModifyListModRes: [{
+PDUSessionID: 1
+PDUSessionResourceModifyResponseTransfer: <APER-encoded, containing:
+QosFlowAddOrModifyResponseList: [{
+QosFlowIdentifier: 1 // QFI=1 is reserved for default QoS,
+}] // never present in AdditonalQosFlows
+>
+}]
+}
 
 Screen shot:
 <img width="2286" height="1500" alt="图片" src="https://github.com/user-attachments/assets/dd9672ad-86f5-4c3c-99cf-ae73845ba3b3" />
