@@ -14,7 +14,7 @@ Attack Vector: Remote (requires gNB connection)
 ## Proof of Concept (PoC)
 Since the vulnerability is triggered in the deeper layers of the GMM procedure, where the UE's Authentication Response needs to calculate the RES* field using the random number sent by the core network in the current registration (no key is required, and any valid IMSI can complete this), it is not possible to provide a hardcoded PoC. Here, the trigger process is illustrated through root cause analysis, a sample packet capture, and a screenshot of the trigger.
 
-Vulnerable code (ngap_handler.go:108-122):
+Vulnerable code (NFs/smf/internal/context/ngap_handler.go:108-122):
 ```go
   if qosInfoList := resourceModifyResponseTransfer.QosFlowAddOrModifyResponseList; qosInfoList != nil {
       for _, item := range qosInfoList.List {
