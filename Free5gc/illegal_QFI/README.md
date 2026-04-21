@@ -12,18 +12,20 @@ Impact: Denial of Service (DoS)
 
 Attack Vector: Remote (requires gNB connection)
 ## Proof of Concept (PoC)
-Since the vulnerability is triggered in the deeper layers of the GMM procedure, where the UE's Authentication Response needs to calculate the RES* field using the random number sent by the core network in the current registration (no key is required, and any valid IMSI can complete this), 
-it is not possible to provide a hardcoded PoC. Here, the trigger process is illustrated through root cause analysis, a sample packet capture, and a screenshot of the trigger.
+Since the vulnerability is triggered in the deeper layers of the GMM procedure, where the UE's Authentication Response needs to calculate the RES* field using the random number sent by the core network in the current registration (no key is required, and any valid IMSI can complete this), it is not possible to provide a hardcoded PoC. Here, the trigger process is illustrated through root cause analysis, a sample packet capture, and a screenshot of the trigger.
 
-In the CreatePDUSession function, the code does not check the range of the PDU Session ID and directly uses it to create and store the SmContext.
-<img width="1131" height="471" alt="图片" src="https://github.com/user-attachments/assets/c3670034-ebbd-40ab-a07a-d323fe5cf5e3" />
-Therefore, a session with ID=20 can be successfully established and stored in ue.SmContextList.
-<img width="1374" height="170" alt="图片" src="https://github.com/user-attachments/assets/639d3c4a-a067-4d5e-967f-da4f0625a806" />
-When a Service Request contains UplinkDataStatus or PDUSessionStatus, a crash occurs in the releaseInactivePDUSession function due to out-of-bounds read and out-of-bounds write operations.
-<img width="1560" height="555" alt="图片" src="https://github.com/user-attachments/assets/f6026a5c-0ab3-45ed-99f9-7ceba369211a" />
-<img width="1647" height="390" alt="图片" src="https://github.com/user-attachments/assets/8c5b3d6e-f168-4bcd-aa20-553b56c91b2b" />
+Vulnerable code (ngap_handler.go:245-247):
+```go
+  if ctx.NrdcIndicator {
+      ieExtensions := pathSwitchRequestTransfer.IEExtensions
+      for _, ie := range ieExtensions.List {  // PANIC: ieExtensions can be nil
+```
+Vulnerable packet:
+	in appendix
 
-<img width="1638" height="873" alt="图片" src="https://github.com/user-attachments/assets/3fef5e82-6634-460a-9d07-4182fe35dbe3" />
+Screen shot:
+<img width="2286" height="1500" alt="图片" src="https://github.com/user-attachments/assets/dd9672ad-86f5-4c3c-99cf-ae73845ba3b3" />
+
 
 ## Description
 SMF's HandlePDUSessionResourceModifyResponseTransfer does not validate whether a QFI from the NGAP QosFlowAddOrModifyResponseList exists in ctx.AdditonalQosFlows before accessing it. The panic causes the N11 SM Context Update request to return HTTP 500 to the AMF, leaving the SM Context's QoS flow state potentially inconsistent with the actual radio bearer state on the gNB side.
