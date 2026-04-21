@@ -21,7 +21,7 @@ Vulnerable code (src/smf/gsm-handler.c:274-275):
       pf = smf_pf_add(qos_flow);                                                          
       ogs_assert(pf);                                                          
       ogs_assert(                  
-          reconfigure_packet_filter(pf, &qos_rule[i], i) > 0);  // BUG: 传入 i 而非 j   
+          reconfigure_packet_filter(pf, &qos_rule[i], i) > 0);   
   }   
 ```
 
