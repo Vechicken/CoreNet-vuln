@@ -23,6 +23,14 @@ Vulnerable code (ngap_handler.go:245-247):
 Vulnerable packet:
 	in appendix
 
+Steps to reproduce the behavior:
+
+1. Use default free5gc configuration.
+2. Start all NFs (./run.sh).
+3. gNB sends PDUSessionResourceSetupResponse with PDUSessionResourceSetupResponseTransfer containing the optional AdditionalDLQosFlowPerTNLInformation field.
+4. gNB sends PathSwitchRequest for the same PDU session, with a standard PathSwitchRequestTransfer that does NOT include the optional IEExtensions field.
+
+
 Screen shot:
 <img width="1848" height="1179" alt="图片" src="https://github.com/user-attachments/assets/faeea306-3f96-4961-bbbe-29a696928c0a" />
 
