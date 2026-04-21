@@ -26,6 +26,28 @@ Vulnerable code (NFs/amf/internal/ngap/handler.go:1403-1408):
 Vulnerable packet:
 	in appendix
 
+Steps to reproduce the behavior:
+1. Deploy free5GC AMF with default configuration.
+2. Connect a gNB emulator to AMF.
+3. Send a HandoverRequestAcknowledge without AMF-UE-NGAP-ID IE
+```text
+  NGAP-PDU: successfulOutcome {                                                                                                                                                                                                                                                                                         
+    procedureCode: 13  (id-HandoverResourceAllocation)
+    criticality: reject (0)                                                                                                                                                                                                                                                                                             
+    value: HandoverRequestAcknowledge {                           
+      protocolIEs: [                                                                                                                                                                                                                                                                                                    
+        {                                                                                                                                                                                                                                                                                                               
+          id: 63  (id-TargetToSource-TransparentContainer)
+          criticality: reject (0)                                                                                                                                                                                                                                                                                       
+          value: TargetToSourceTransparentContainer: 0x00         
+        }                                                                                                                                                                                                                                                                                                               
+      ]                                                           
+    }                                                                                                                                                                                                                                                                                                                   
+  }   
+```
+4. Observe AMF process crash.
+
+
 Screen shot:
 <img width="1857" height="794" alt="图片" src="https://github.com/user-attachments/assets/fd3f4e02-14ff-43ec-857c-fb6209959471" />
 
