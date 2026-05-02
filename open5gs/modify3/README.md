@@ -80,7 +80,7 @@ Screen shot:
 Open5GS SMF does not validate the legality of the unit field in the bitrate parameter when processing the QoS Flow Description parameter in a NAS PDU Session Modification Request message. When the unit value is 0 or greater than 25, the ogs_nas_bitrate_to_uint64() function invokes ogs_assert_if_reached(), causing the SMF process to crash with an abort.
 
 ### Reference
-- https://github.com/open5gs/open5gs/issues/4429
+- https://github.com/open5gs/open5gs/issues/4511
 
 ### Log File
 
