@@ -81,7 +81,7 @@ Screen shot:
 In Open5GS, when a single PDU Session Modification Request contains two QoS Rules that operate on the same Rule Identifier, with one performing a DELETE operation and the other performing a CREATE operation, the SMF may set both the MODIFY_REMOVE and MODIFY_TFT_NEW flags in pfcp_flags, which subsequently causes the SMF to crash.
 
 ### Reference
-- https://github.com/open5gs/open5gs/issues/4511
+- https://github.com/open5gs/open5gs/issues/4512
 
 ### Log File
 
