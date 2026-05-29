@@ -29,9 +29,6 @@ As a result, the attacker only needs to set the 5GMM Cause field to 0x00 to make
 ## Description
 Oai-cn5g-amf lacks pointer initialization for the Authentication Failure message handling path and also fails to check whether the pointer is null before use. As a result, an unauthenticated attacker can crash the AMF process with a single NAS message after gNB registration, rendering the authentication service of the entire 5G core network unavailable.
 
-### Reference
-- 
-
 ### Log File
 ```text
 20:53:13 ubuntu kernel: oai_amf[1880271]: segfault at 39 ip 000055815af558e4 sp 00007f35ebffe7b8 error 4 in oai_amf[558159f42000+142e000]
