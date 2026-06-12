@@ -2,7 +2,7 @@
 
 Vendor: open5gs (https://open5gs.org)
 
-Affected Product: open5gs AMF (Session Management Function)
+Affected Product: open5gs AMF (Access and Mobility Management Function)
 
 Affected Version: <= v2.7.7
 
